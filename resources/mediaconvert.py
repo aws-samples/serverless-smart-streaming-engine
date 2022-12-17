@@ -6,7 +6,7 @@ import time
 
 
 def convert_media(
-    mediaconvert, dest_bucket, source_bucket, source_key, mc_job_template
+    mediaconvert, dest_bucket, source_bucket, source_key, mc_job_template,mc_role_arn
 ):
     mediaconvert_input_path = "s3://" + source_bucket + "/" + source_key
 
@@ -15,7 +15,7 @@ def convert_media(
 
     rc = mediaconvert.create_job(
         JobTemplate=mc_job_template,
-        Role="arn:aws:iam::236241703319:role/service-role/MediaConvert_Default_Role_Full",
+        Role=mc_role_arn,
         Settings={
             "Inputs": [
                 {
@@ -42,6 +42,7 @@ def handler(event, context):
     dest_bucket = os.environ.get("DEST_BUCKET")
     mc_endpoint = os.environ.get("MC_ENDPOINT")
     mc_job_template = os.environ.get("MC_JOB_TEMPLATE")
+    mc_role_arn = os.environ.get("MC_ROLE_ARN")
 
     # You need to get your own MediaConvert regional endpoint using
     # `aws mediaconvert describe-endpoints` cli command
@@ -82,6 +83,6 @@ def handler(event, context):
     source_key = message["MessageAttributes"]["Key"]["StringValue"]
 
     # Convert the video
-    convert_media(mediaconvert, dest_bucket, source_bucket, source_key, mc_job_template)
+    convert_media(mediaconvert, dest_bucket, source_bucket, source_key, mc_job_template, mc_role_arn)
 
     print(json.dumps(message, indent=2))

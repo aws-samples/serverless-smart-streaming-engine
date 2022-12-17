@@ -1,4 +1,4 @@
-import { CfnOutput, Fn, Aws, aws_s3 as s3, aws_sqs as sqs } from "aws-cdk-lib";
+import { CfnOutput, Fn, Aws, aws_s3 as s3, aws_sqs as sqs, aws_dynamodb as dynamodb } from "aws-cdk-lib";
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { MediaPackageCdnAuth } from "./media_package";
@@ -7,6 +7,7 @@ import { CloudFront } from "./cloudfront";
 import { S3LambdaToSQS } from "./s3lambda-to-sqs";
 import { mediaConvertLambda } from "./sqs-to-mediaconvert";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import { MediaConvertToRekognition } from "./MediaConver2Rekognition";
 
 const configurationMediaLive = {
   streamName: "live",
@@ -64,16 +65,17 @@ export class EventReplayEngine extends cdk.Stack {
     // S3 bucket for this stack
     const MyEventReplayEngineBucket = new s3.Bucket(this, "MyEventReplayEngineBucket");
 
-    // SQS to queue converting jobs
-    const lambdaReqQueue = new sqs.Queue(this, "EventReplayEngine");
-    const fromS3LamdbatoSQS = new S3LambdaToSQS(this, "S3LamdbaToSQS", MyEventReplayEngineBucket, lambdaReqQueue);
-
-    const sqsToMediaConvert = new mediaConvertLambda(
-      this,
-      "LamdbaCallingMediaConvert",
-      lambdaReqQueue.queueUrl,
-      MyEventReplayEngineBucket
-    );
+    // DynamoDB Table for this stack
+    const ddbTable = new dynamodb.Table(this, "EventReplayEnginTable", {
+      partitionKey: {
+        name: "PK",
+        type: dynamodb.AttributeType.STRING,
+      },
+      sortKey: {
+        name: "SK",
+        type: dynamodb.AttributeType.STRING,
+      },
+    });
     /*
      * First step: Create MediaPackage Channel 👇
      */
@@ -104,11 +106,24 @@ export class EventReplayEngine extends cdk.Stack {
     //👇Add dependencyto wait for MediaPackage channel to be ready before deploying MediaLive
     mediaLiveChannel.node.addDependency(mediaPackageChannel);
 
-    new lambda.Function(this, "S3ArchiveToSQS", {
-      runtime: lambda.Runtime.PYTHON_3_7,
-      handler: "s3archive-to-sqs.handler",
-      code: lambda.Code.fromAsset("./resources"),
-    });
+    // SQS to queue converting jobs
+    const lambdaReqQueue = new sqs.Queue(this, "EventReplayEngine");
+    const fromS3LamdbatoSQS = new S3LambdaToSQS(this, "S3LamdbaToSQS", MyEventReplayEngineBucket, lambdaReqQueue);
+
+    const sqsToMediaConvert = new mediaConvertLambda(
+      this,
+      "LamdbaCallingMediaConvert",
+      lambdaReqQueue.queueUrl,
+      MyEventReplayEngineBucket,
+      lambdaReqQueue
+    );
+
+    const mediaConvertToRekognition = new MediaConvertToRekognition(
+      this,
+      "MediaConvertToRekognition",
+      MyEventReplayEngineBucket,
+      ddbTable.tableName
+    );
 
     /*
      * Final step: CloudFormation Output 👇
