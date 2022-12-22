@@ -1,0 +1,38 @@
+{
+  "Records": [
+    {
+      "eventVersion": "2.1",
+      "eventSource": "aws:s3",
+      "awsRegion": "ap-northeast-2",
+      "eventTime": "2022-12-21T02:21:23.343Z",
+      "eventName": "ObjectCreated:CompleteMultipartUpload",
+      "userIdentity": {
+        "principalId": "AWS:AROATOAI2KGL5K7QT6IM6:EmeSession_729c539455e7ca492d36ec168185a91e"
+      },
+      "requestParameters": {
+        "sourceIPAddress": "172.31.1.213"
+      },
+      "responseElements": {
+        "x-amz-request-id": "VWMC252Z3F498F0S",
+        "x-amz-id-2": "qLjDGtb9a59m7dAyMH+HaZilDiZwfrL5X2ty71owTkeH7D/q8g0/0RgDgwhSIo9mzkNc4SanHiDm/gsQy15wuMLzDZ5/c2pP"
+      },
+      "s3": {
+        "s3SchemaVersion": "1.0",
+        "configurationId": "ODZmNzc1MDEtMGU2MC00YTI4LWEzY2EtMmM3YTkxMjg3MjBl",
+        "bucket": {
+          "name": "eventreplayengine-rekognitionbucketb1399c89-125avj9v05h6e",
+          "ownerIdentity": {
+            "principalId": "A1Z5P64ETLCEXT"
+          },
+          "arn": "arn:aws:s3:::eventreplayengine-rekognitionbucketb1399c89-125avj9v05h6e"
+        },
+        "object": {
+          "key": "rekog-data/20221221T020515.000008.mp4",
+          "size": 13508516,
+          "eTag": "2a1205699413df34c1e1f399f82dbf48-2",
+          "sequencer": "0063A26DA3097D0876"
+        }
+      }
+    }
+  ]
+}

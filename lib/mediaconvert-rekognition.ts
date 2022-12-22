@@ -6,20 +6,15 @@ import {
   aws_events as eventbridge,
   aws_events_targets as targets,
   Duration,
+  aws_s3_notifications as notifications,
   Size,
 } from "aws-cdk-lib";
+import * as path from "path";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 
 export class MediaConvertToRekognition extends Construct {
-  constructor(scope: Construct, id: string, bucket: s3.Bucket, tableName: string) {
+  constructor(scope: Construct, id: string, rekogBucket: s3.Bucket, tableName: string) {
     super(scope, id);
-
-    // Create an event rule for MediaConvert Complete
-    const rule = new eventbridge.Rule(this, "MediaConvertJobCompleteEvent", {
-      eventPattern: {
-        source: ["aws.mediaconvert"],
-        detail: { status: ["COMPLETE"] },
-      },
-    });
 
     // Create an lambda that is invoked by the event above.
     // This lambda will call Rekognition to analyze the video content
@@ -33,24 +28,21 @@ export class MediaConvertToRekognition extends Construct {
       ],
     });
 
-    const myLambda = new lambda.Function(this, "EventReplayEngineRekognitionLambda", {
+    const myLambda = new NodejsFunction(this, "RekognitionInvoker", {
       role: lamdbaRole,
-      runtime: lambda.Runtime.PYTHON_3_7,
-      handler: "rekognition.handler",
-      code: lambda.Code.fromAsset("./resources"),
-      ephemeralStorageSize: Size.mebibytes(1024),
-      timeout: Duration.minutes(5),
+      entry: path.join(__dirname, `/../resources/rekognition.ts`),
+      handler: "handler",
+      memorySize: 10240,
+      ephemeralStorageSize: Size.mebibytes(10240),
+      timeout: Duration.minutes(15),
       environment: {
-        DEST_BUCKET: bucket.bucketName,
+        DEST_BUCKET: rekogBucket.bucketName,
         TABLE: tableName,
       },
     });
 
-    // Add a rekognition lambda as a target of EventBridge rule
-    rule.addTarget(
-      new targets.LambdaFunction(myLambda, {
-        retryAttempts: 3,
-      })
-    );
+    const trigger = new notifications.LambdaDestination(myLambda);
+    trigger.bind(this, rekogBucket);
+    rekogBucket.addObjectCreatedNotification(trigger, { suffix: ".mp4" });
   }
 }

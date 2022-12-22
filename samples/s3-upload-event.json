@@ -1,0 +1,38 @@
+{
+  "Records": [
+    {
+      "eventVersion": "2.1",
+      "eventSource": "aws:s3",
+      "awsRegion": "ap-northeast-2",
+      "eventTime": "2022-06-08T13:50:55.961Z",
+      "eventName": "ObjectCreated:CompleteMultipartUpload",
+      "userIdentity": {
+        "principalId": "AWS:AROATOAI2KGLQ7Q2MTR4I:medialive_ap-northeast-2_236241703319_5148100-0"
+      },
+      "requestParameters": {
+        "sourceIPAddress": "10.10.3.228"
+      },
+      "responseElements": {
+        "x-amz-request-id": "0B8Y4NMZS82BV1R8",
+        "x-amz-id-2": "ce/41pHMqiEdo2ASSL6opTIDrdwzDCj7OmVaTpOan9KqnlywJO9L2BVEB137Rik1XMlBnP8z5IyJjnYbGAHezLNP39/ZPr7Y"
+      },
+      "s3": {
+        "s3SchemaVersion": "1.0",
+        "configurationId": "NTk0ZjMyOWQtZTExZi00ODZjLWE5Y2UtMDRmMTllMWU0NWUw",
+        "bucket": {
+          "name": "eventreplayengine-myeventreplayenginebucket041b52-idumtg66h5uk",
+          "ownerIdentity": {
+            "principalId": "A1Z5P64ETLCEXT"
+          },
+          "arn": "arn:aws:s3:::eventreplayengine-myeventreplayenginebucket041b52-idumtg66h5uk"
+        },
+        "object": {
+          "key": "medialiveArchive/20221217T093335.000004.ts",
+          "size": 44932000,
+          "eTag": "9d47bec926ff571a8d29e52cec1bf087-3",
+          "sequencer": "0062A0A920A943B1E1"
+        }
+      }
+    }
+  ]
+}

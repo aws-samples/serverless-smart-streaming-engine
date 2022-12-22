@@ -1,13 +1,25 @@
-import { CfnOutput, Fn, Aws, aws_s3 as s3, aws_sqs as sqs, aws_dynamodb as dynamodb } from "aws-cdk-lib";
+import {
+  CfnOutput,
+  Fn,
+  Aws,
+  aws_s3 as s3,
+  aws_sqs as sqs,
+  aws_dynamodb as dynamodb,
+  Duration,
+  aws_cloudfront as cloudfront,
+} from "aws-cdk-lib";
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { MediaPackageCdnAuth } from "./media_package";
 import { MediaLive } from "./media_live";
-import { CloudFront } from "./cloudfront";
+import { CloudFrontForStreaming } from "./cloudfront-streaming";
+import { CloudFrontForVod } from "./cloudfront-vod";
 import { S3LambdaToSQS } from "./s3lambda-to-sqs";
 import { mediaConvertLambda } from "./sqs-to-mediaconvert";
 import * as lambda from "aws-cdk-lib/aws-lambda";
-import { MediaConvertToRekognition } from "./MediaConver2Rekognition";
+import { MediaConvertToRekognition } from "./mediaconvert-rekognition";
+import { AmplifyStack } from "./amplify";
+import { table } from "console";
 
 const configurationMediaLive = {
   streamName: "live",
@@ -62,11 +74,14 @@ export class EventReplayEngine extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // S3 bucket for this stack
-    const MyEventReplayEngineBucket = new s3.Bucket(this, "MyEventReplayEngineBucket");
+    // S3 bucket for MediaLive Archive
+    const mediaLiveArchiveBucket = new s3.Bucket(this, "mediaLiveArchiveBucket");
+    const mediaConvertBucket = new s3.Bucket(this, "MediaConvertBucket");
+    const rekognitionBucket = new s3.Bucket(this, "RekognitionBucket");
 
     // DynamoDB Table for this stack
     const ddbTable = new dynamodb.Table(this, "EventReplayEnginTable", {
+      billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       partitionKey: {
         name: "PK",
         type: dynamodb.AttributeType.STRING,
@@ -90,13 +105,13 @@ export class EventReplayEngine extends cdk.Stack {
       "MyMediaLiveChannel",
       configurationMediaLive,
       mediaPackageChannel.myChannel.id,
-      MyEventReplayEngineBucket.bucketName
+      mediaLiveArchiveBucket.bucketName
     );
 
     /*
-     * Third step: Create CloudFront Distribution 👇
+     * Third step: Create CloudFront Distribution for Streaming Event 👇
      */
-    const cloudfront = new CloudFront(
+    const streamingCloudfront = new CloudFrontForStreaming(
       this,
       "MyCloudFrontDistribution",
       mediaPackageChannel.myChannelEndpointHls.attrUrl,
@@ -107,23 +122,32 @@ export class EventReplayEngine extends cdk.Stack {
     mediaLiveChannel.node.addDependency(mediaPackageChannel);
 
     // SQS to queue converting jobs
-    const lambdaReqQueue = new sqs.Queue(this, "EventReplayEngine");
-    const fromS3LamdbatoSQS = new S3LambdaToSQS(this, "S3LamdbaToSQS", MyEventReplayEngineBucket, lambdaReqQueue);
+    const lambdaReqQueue = new sqs.Queue(this, "EventReplayEngine", {
+      visibilityTimeout: Duration.seconds(60),
+    });
+    const fromS3LamdbatoSQS = new S3LambdaToSQS(this, "S3LamdbaToSQS", mediaLiveArchiveBucket, lambdaReqQueue);
 
     const sqsToMediaConvert = new mediaConvertLambda(
       this,
       "LamdbaCallingMediaConvert",
       lambdaReqQueue.queueUrl,
-      MyEventReplayEngineBucket,
+      mediaConvertBucket,
+      rekognitionBucket,
       lambdaReqQueue
     );
 
     const mediaConvertToRekognition = new MediaConvertToRekognition(
       this,
       "MediaConvertToRekognition",
-      MyEventReplayEngineBucket,
+      rekognitionBucket,
       ddbTable.tableName
     );
+
+    // CloudFront Distribution for VOD contents
+    const cloudfrontForVod = new CloudFrontForVod(this, "CloudFrontForVod", mediaConvertBucket);
+
+    // Resources for Amplify Frontend: API Gateway + Lambda
+    const frontendStack = new AmplifyStack(this, "AmplifyFrontend", ddbTable, cloudfrontForVod.domainName);
 
     /*
      * Final step: CloudFormation Output 👇
@@ -159,6 +183,7 @@ export class EventReplayEngine extends cdk.Stack {
         });
       }
     }
+
     new CfnOutput(this, "MyMediaLiveChannelS3ArchivePath", {
       value: mediaLiveChannel.s3ArchivePath,
       exportName: Aws.STACK_NAME + "mediaLiveChannelS3ArchivePath",
@@ -173,21 +198,36 @@ export class EventReplayEngine extends cdk.Stack {
     });
 
     // CloudFront 👇
-    new CfnOutput(this, "MyCloudFrontHlsEndpoint", {
-      value: cloudfront.hlsPlayback,
+    new CfnOutput(this, "MyStreamingCloudFrontHlsEndpoint", {
+      value: streamingCloudfront.hlsPlayback,
       exportName: Aws.STACK_NAME + "cloudFrontHlsEndpoint",
       description: "The HLS playback endpoint",
     });
-    new CfnOutput(this, "MyCloudFrontDashEndpoint", {
-      value: cloudfront.dashPlayback,
+    new CfnOutput(this, "MyStreamingloudFrontDashEndpoint", {
+      value: streamingCloudfront.dashPlayback,
       exportName: Aws.STACK_NAME + "cloudFrontDashEndpoint",
       description: "The MPEG DASH playback endpoint",
     });
     // Exporting S3 Buckets for the Log and the hosting demo
-    new CfnOutput(this, "MyCloudFrontS3LogBucket", {
-      value: cloudfront.s3LogBucket.bucketName,
+    new CfnOutput(this, "MyStreamingCloudFrontS3LogBucket", {
+      value: streamingCloudfront.s3LogBucket.bucketName,
       exportName: Aws.STACK_NAME + "cloudFrontS3BucketLog",
       description: "The S3 bucket for CloudFront logs",
+    });
+    new CfnOutput(this, "MyStreamingCloudFrontForVod", {
+      value: cloudfrontForVod.domainName,
+      exportName: Aws.STACK_NAME + "CloudFrontForVod",
+      description: "CloudFront Domain Name for Vod Contents",
+    });
+    new CfnOutput(this, "APIGatewayURLforAmplify", {
+      value: frontendStack.agwUrl,
+      exportName: Aws.STACK_NAME + "APIGatewayURL",
+      description: "API Gateway URL for Amplify Frontend",
+    });
+    new CfnOutput(this, "FrontPageURL", {
+      value: "http://" + frontendStack.frontPage,
+      exportName: Aws.STACK_NAME + "FrontPageURL",
+      description: "Frontend web page in S3 web hosting with CloudFront distribution.",
     });
   }
 }

@@ -11,11 +11,21 @@ import {
 } from "aws-cdk-lib";
 import "dotenv/config";
 import * as dotenv from "dotenv";
+import * as path from "path";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 
 dotenv.config({ path: __dirname + "/../.env" });
 
 export class mediaConvertLambda extends Construct {
-  constructor(scope: Construct, id: string, sqsQueueUrl: string, s3Bucket: s3.Bucket, jobQueue: sqs.IQueue) {
+  public readonly jobTemplateName: string;
+  constructor(
+    scope: Construct,
+    id: string,
+    sqsQueueUrl: string,
+    mcBucket: s3.Bucket,
+    rkBucket: s3.Bucket,
+    jobQueue: sqs.IQueue
+  ) {
     super(scope, id);
 
     // Load MediaConvert endpoint URL from .env file
@@ -24,7 +34,14 @@ export class mediaConvertLambda extends Construct {
     // Create a job template using JSON
     const jobTemplateParams = require("../config/encoding-profiles/mc-job-template");
 
-    const cfnJobTemplate = new mediaconvert.CfnJobTemplate(this, "MyCfnJobTemplate", {
+    // Set S3 bucket name for outputs
+    jobTemplateParams["OutputGroups"][0]["OutputGroupSettings"]["HlsGroupSettings"]["Destination"] =
+      "s3://" + mcBucket.bucketName + "/vod-assets/";
+
+    jobTemplateParams["OutputGroups"][1]["OutputGroupSettings"]["FileGroupSettings"]["Destination"] =
+      "s3://" + rkBucket.bucketName + "/rekog-data/";
+
+    const jobTemplate = new mediaconvert.CfnJobTemplate(this, "MyCfnJobTemplate", {
       category: "OTT-HLS",
       queue: "arn:aws:mediaconvert:ap-northeast-2:236241703319:queues/Default",
       name: "event-replay-engine-job-template",
@@ -36,6 +53,8 @@ export class mediaConvertLambda extends Construct {
       priority: 0,
       hopDestinations: [],
     });
+
+    const jobTemplateName: string = jobTemplate.name!;
 
     const lamdbaRole = new iam.Role(this, "RoleForMediaConvertLambda", {
       assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
@@ -51,29 +70,28 @@ export class mediaConvertLambda extends Construct {
     const roleForMediaConvert = new iam.Role(this, "RoleForMediaConvert", {
       assumedBy: new iam.ServicePrincipal("mediaconvert.amazonaws.com"),
       managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonSQSFullAccess"),
+        iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess"),
         iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonAPIGatewayInvokeFullAccess"),
       ],
     });
 
-    // create a lambda which calls MediaConvert
-    const my_lambda = new lambda.Function(this, "EventReplayEngineMediaConvertLambda", {
+    const myLambda = new NodejsFunction(this, "EventReplayEngineS3UploadTrigger", {
       role: lamdbaRole,
-      runtime: lambda.Runtime.PYTHON_3_7,
-      handler: "mediaconvert.handler",
-      code: lambda.Code.fromAsset("./resources"),
+      entry: path.join(__dirname, `/../resources/mediaconvert.ts`),
+      handler: "handler",
       ephemeralStorageSize: Size.mebibytes(1024),
-      timeout: Duration.minutes(5),
+      timeout: Duration.minutes(1),
       environment: {
         QUEUE_URL: sqsQueueUrl,
-        MC_ENDPOINT: mediaConvertEndpoint,
-        MC_JOB_TEMPLATE: JSON.stringify(jobTemplateParams),
-        DEST_BUCKET: s3Bucket.bucketName,
+        MC_JOB_TEMPLATE: jobTemplateName,
         MC_ROLE_ARN: roleForMediaConvert.roleArn,
       },
     });
 
     // Register SQS as a event source of lambda_sqs_to_mediaconvert_handler
-    const sqsEventSource = new eventSource.SqsEventSource(jobQueue);
+    const sqsEventSource = new eventSource.SqsEventSource(jobQueue, { batchSize: 1 });
+    myLambda.addEventSource(sqsEventSource);
+
+    this.jobTemplateName = jobTemplateName;
   }
 }

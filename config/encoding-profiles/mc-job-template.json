@@ -43,7 +43,7 @@
           "SegmentLength": 3,
           "TimedMetadataId3Period": 10,
           "CaptionLanguageSetting": "OMIT",
-          "Destination": "s3://abpdemovodbackendcdkstac-abpdemofrommediaconvertb-1u2htshoq63q5/vod-assets/",
+          "Destination": "",
           "TimedMetadataId3Frame": "PRIV",
           "CodecSpecification": "RFC_4281",
           "OutputSelection": "MANIFESTS_AND_SEGMENTS",
@@ -94,7 +94,7 @@
       "OutputGroupSettings": {
         "Type": "FILE_GROUP_SETTINGS",
         "FileGroupSettings": {
-          "Destination": "s3://abpdemovodbackendcdkstac-abpdemofrommediaconvertb-1u2htshoq63q5/rekog-data/"
+          "Destination": ""
         }
       }
     }

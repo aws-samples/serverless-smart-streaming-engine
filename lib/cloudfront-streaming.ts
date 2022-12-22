@@ -25,7 +25,7 @@ import { Secrets } from "./secrets_mediapackage";
 import * as cdk from "aws-cdk-lib";
 import { NagSuppressions } from "cdk-nag";
 
-export class CloudFront extends Construct {
+export class CloudFrontForStreaming extends Construct {
   //👇 Defining public variables to export on CloudFormation
   public readonly channel: mediapackage.CfnChannel;
   public readonly hlsPlayback: string;
@@ -95,7 +95,7 @@ export class CloudFront extends Construct {
     //👇 3. Creating CloudFront distributions
 
     //3.1. Distribution for media Live distribution
-    const distribution = new cloudfront.Distribution(this, "Distribution", {
+    const distribution = new cloudfront.Distribution(this, "DistributionForStreaming", {
       comment: Aws.STACK_NAME + this.DESCRIPTIONDISTRIBUTION,
       sslSupportMethod: cloudfront.SSLMethod.VIP,
       enableLogging: true,
