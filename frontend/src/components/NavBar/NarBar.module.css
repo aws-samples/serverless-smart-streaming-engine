@@ -1,0 +1,12 @@
+.navbar {
+    display: flex;
+    background-color: #333;
+    color: aliceblue;
+    justify-content: left;
+}
+
+.navbar h2 {
+    padding: 0px;
+    margin: 10px;
+    margin-left: 2rem;
+}

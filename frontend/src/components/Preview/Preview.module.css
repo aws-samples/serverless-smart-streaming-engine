@@ -1,0 +1,8 @@
+.previewPlayer {
+    margin: 1rem;
+    color: black;
+}
+
+.previewPlayer .previewItem {
+    margin-bottom: 10px;
+}
