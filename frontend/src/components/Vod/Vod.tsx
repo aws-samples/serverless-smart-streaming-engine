@@ -17,7 +17,7 @@ const Vod = () => {
   const getVodList = (e: MouseEvent) => {
     e.preventDefault();
 
-    const apiName = "AbpDemoApiGateway";
+    const apiName = "GetVideoList";
     const apiPath = "/vod";
     const testEvent = {
       message: "Hello, this is the test event from the amplify",
@@ -27,22 +27,23 @@ const Vod = () => {
 
     API.get(apiName, apiPath, testEvent)
       .then((response) => {
-        console.log(response);
+        // console.log(response);
 
-        for (const [key, value] of response) {
+        for (const i in response) {
           // this.list.push(<li key={key.toString}><a href={value}>{key}</a></li>)
+          console.log(i, response[i]);
           list.push(
-            <li key={key.toString()}>
-              <Preview url={value} title={key}></Preview>
+            <li key={i}>
+              <Preview url={response[i]} title={i}></Preview>
             </li>
           );
         }
 
         setplaylist(list);
-        console.log(playlist);
+        // console.log(playlist);
       })
       .catch((error) => {
-        console.log(error.response);
+        // console.log(error.response);
       });
   };
 

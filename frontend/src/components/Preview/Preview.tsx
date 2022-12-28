@@ -25,12 +25,14 @@ const Preview = (props: Video) => {
     setPlaying(false); // Play the video
   };
 
+  console.log(props.url);
+
   return (
     <div>
       <div className={styles.previewPlayer}>
         <ReactPlayer
           className={styles.previewItem}
-          url={props.url}
+          url={"https://" + props.url}
           width="426px"
           height="240px"
           type="application/x-mpegURL"

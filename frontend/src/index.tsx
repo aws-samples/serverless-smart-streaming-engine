@@ -4,6 +4,18 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Amplify } from "aws-amplify";
+import cdk from "./cdk-exports.json";
+
+Amplify.configure({
+  API: {
+    endpoints: [
+      {
+        name: "GetVideoList",
+        endpoint: cdk.EventReplayEngine.AmplifyFrontendApiGatewayEndpoint6D255223,
+      },
+    ],
+  },
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
