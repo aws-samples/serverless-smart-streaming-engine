@@ -4,13 +4,13 @@ import {
   StartCelebrityRecognitionCommand,
   GetCelebrityRecognitionCommand,
 } from "@aws-sdk/client-rekognition";
-import { S3Event } from "aws-lambda";
+import { EventBridgeEvent, S3Event } from "aws-lambda";
 
 interface ISvgObj {
   [key: string]: string;
 }
 
-export const handler = async (event: S3Event) => {
+export const handler = async (event: EventBridgeEvent<"Media Convertin Complete Event", any>) => {
   const rekognition = new RekognitionClient({ region: "ap-northeast-2" });
   const dynamodb = new DynamoDBClient({ region: "ap-northeast-2" });
 
@@ -19,16 +19,23 @@ export const handler = async (event: S3Event) => {
 
   console.log(`Event received from EventBridge: ${JSON.stringify(event)}`);
 
-  const s3Info = event["Records"][0]["s3"];
-  const bucketName = s3Info["bucket"]["name"];
-  const objectKey = s3Info["object"]["key"];
+  // Get the bucket and key name from the event
+  let objectInfo = event["detail"]["outputGroupDetails"][1]["outputDetails"][0]["outputFilePaths"][0].split("//");
+  objectInfo = objectInfo[1].split("/");
 
-  console.log(`Bucket: ${bucketName}, Key: ${objectKey}`);
+  const bucket = objectInfo[0];
+  let key = objectInfo[1];
+  let i = 2;
+  while (i < objectInfo.length) {
+    key += "/" + objectInfo[i];
+  }
 
-  const celebrities = await rekognize(rekognition, bucketName, objectKey);
+  console.log(`Bucket: ${bucket}, Key: ${key}`);
+
+  const celebrities = await rekognize(rekognition, bucket, key);
 
   if ("Son Heung-min" in celebrities) {
-    const videoPath = "s3://" + bucketName + "/" + objectKey;
+    const videoPath = "s3://" + bucket + "/" + key;
 
     dynamodb.send(
       new PutItemCommand({

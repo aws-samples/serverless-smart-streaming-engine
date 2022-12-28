@@ -16,6 +16,14 @@ export class MediaConvertToRekognition extends Construct {
   constructor(scope: Construct, id: string, rekogBucket: s3.Bucket, tableName: string) {
     super(scope, id);
 
+    // Create an event rule for MediaConvert Complete
+    const rule = new eventbridge.Rule(this, "MediaConvertJobCompleteEvent", {
+      eventPattern: {
+        source: ["aws.mediaconvert"],
+        detail: { status: ["COMPLETE"] },
+      },
+    });
+
     // Create an lambda that is invoked by the event above.
     // This lambda will call Rekognition to analyze the video content
     const lamdbaRole = new iam.Role(this, "RoleForRekognitionLambad", {
@@ -41,8 +49,11 @@ export class MediaConvertToRekognition extends Construct {
       },
     });
 
-    const trigger = new notifications.LambdaDestination(myLambda);
-    trigger.bind(this, rekogBucket);
-    rekogBucket.addObjectCreatedNotification(trigger, { suffix: ".mp4" });
+    // Add a rekognition lambda as a target of EventBridge rule
+    rule.addTarget(
+      new targets.LambdaFunction(myLambda, {
+        retryAttempts: 3,
+      })
+    );
   }
 }
