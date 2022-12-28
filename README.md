@@ -8,3 +8,7 @@
 - Simple React frontend using Amplify
 
 ## Architecture
+
+![img](images/2022-12-28-20-38-37.png)
+
+##
