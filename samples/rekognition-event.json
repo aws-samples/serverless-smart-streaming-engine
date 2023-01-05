@@ -1,38 +1,123 @@
 {
-  "Records": [
-    {
-      "eventVersion": "2.1",
-      "eventSource": "aws:s3",
-      "awsRegion": "ap-northeast-2",
-      "eventTime": "2022-12-21T02:21:23.343Z",
-      "eventName": "ObjectCreated:CompleteMultipartUpload",
-      "userIdentity": {
-        "principalId": "AWS:AROATOAI2KGL5K7QT6IM6:EmeSession_729c539455e7ca492d36ec168185a91e"
-      },
-      "requestParameters": {
-        "sourceIPAddress": "172.31.1.213"
-      },
-      "responseElements": {
-        "x-amz-request-id": "VWMC252Z3F498F0S",
-        "x-amz-id-2": "qLjDGtb9a59m7dAyMH+HaZilDiZwfrL5X2ty71owTkeH7D/q8g0/0RgDgwhSIo9mzkNc4SanHiDm/gsQy15wuMLzDZ5/c2pP"
-      },
-      "s3": {
-        "s3SchemaVersion": "1.0",
-        "configurationId": "ODZmNzc1MDEtMGU2MC00YTI4LWEzY2EtMmM3YTkxMjg3MjBl",
-        "bucket": {
-          "name": "eventreplayengine-rekognitionbucketb1399c89-125avj9v05h6e",
-          "ownerIdentity": {
-            "principalId": "A1Z5P64ETLCEXT"
+  "version": "0",
+  "id": "46290e0f-95a0-c44f-075f-3b329de67a06",
+  "detail-type": "MediaConvert Job State Change",
+  "source": "aws.mediaconvert",
+  "account": "236241703319",
+  "time": "2023-01-04T14:57:02Z",
+  "region": "ap-northeast-2",
+  "resources": ["arn:aws:mediaconvert:ap-northeast-2:236241703319:jobs/1672844148399-sem5yu"],
+  "detail": {
+    "timestamp": 1672844222805,
+    "accountId": "236241703319",
+    "queue": "arn:aws:mediaconvert:ap-northeast-2:236241703319:queues/Default",
+    "jobId": "1672844148399-sem5yu",
+    "status": "COMPLETE",
+    "userMetadata": {},
+    "outputGroupDetails": [
+      {
+        "outputDetails": [
+          {
+            "outputFilePaths": [
+              "s3://eventreplayengine-mediaconvertbucket0ffa08e9-8cmng59ampbw/vod-assets/20230104T145231.000000_Ott_Hls_Ts_Avc_Aac_16x9_480x270p_15Hz_400Kbps.m3u8"
+            ],
+            "durationInMs": 60060,
+            "videoDetails": {
+              "widthInPx": 480,
+              "heightInPx": 270
+            }
           },
-          "arn": "arn:aws:s3:::eventreplayengine-rekognitionbucketb1399c89-125avj9v05h6e"
-        },
-        "object": {
-          "key": "rekog-data/20221221T020515.000008.mp4",
-          "size": 13508516,
-          "eTag": "2a1205699413df34c1e1f399f82dbf48-2",
-          "sequencer": "0063A26DA3097D0876"
-        }
+          {
+            "outputFilePaths": [
+              "s3://eventreplayengine-mediaconvertbucket0ffa08e9-8cmng59ampbw/vod-assets/20230104T145231.000000_Ott_Hls_Ts_Avc_Aac_16x9_640x360p_30Hz_600Kbps.m3u8"
+            ],
+            "durationInMs": 60026,
+            "videoDetails": {
+              "widthInPx": 640,
+              "heightInPx": 360
+            }
+          },
+          {
+            "outputFilePaths": [
+              "s3://eventreplayengine-mediaconvertbucket0ffa08e9-8cmng59ampbw/vod-assets/20230104T145231.000000_Ott_Hls_Ts_Avc_Aac_16x9_640x360p_30Hz_1200Kbps.m3u8"
+            ],
+            "durationInMs": 60026,
+            "videoDetails": {
+              "widthInPx": 640,
+              "heightInPx": 360
+            }
+          },
+          {
+            "outputFilePaths": [
+              "s3://eventreplayengine-mediaconvertbucket0ffa08e9-8cmng59ampbw/vod-assets/20230104T145231.000000_Ott_Hls_Ts_Avc_Aac_16x9_960x540p_30Hz_3500Kbps.m3u8"
+            ],
+            "durationInMs": 60026,
+            "videoDetails": {
+              "widthInPx": 960,
+              "heightInPx": 540
+            }
+          },
+          {
+            "outputFilePaths": [
+              "s3://eventreplayengine-mediaconvertbucket0ffa08e9-8cmng59ampbw/vod-assets/20230104T145231.000000_Ott_Hls_Ts_Avc_Aac_16x9_1280x720p_30Hz_3500Kbps.m3u8"
+            ],
+            "durationInMs": 60026,
+            "videoDetails": {
+              "widthInPx": 1280,
+              "heightInPx": 720
+            }
+          },
+          {
+            "outputFilePaths": [
+              "s3://eventreplayengine-mediaconvertbucket0ffa08e9-8cmng59ampbw/vod-assets/20230104T145231.000000_Ott_Hls_Ts_Avc_Aac_16x9_1280x720p_30Hz_5000Kbps.m3u8"
+            ],
+            "durationInMs": 60026,
+            "videoDetails": {
+              "widthInPx": 1280,
+              "heightInPx": 720
+            }
+          },
+          {
+            "outputFilePaths": [
+              "s3://eventreplayengine-mediaconvertbucket0ffa08e9-8cmng59ampbw/vod-assets/20230104T145231.000000_Ott_Hls_Ts_Avc_Aac_16x9_1280x720p_30Hz_6500Kbps.m3u8"
+            ],
+            "durationInMs": 60026,
+            "videoDetails": {
+              "widthInPx": 1280,
+              "heightInPx": 720
+            }
+          },
+          {
+            "outputFilePaths": [
+              "s3://eventreplayengine-mediaconvertbucket0ffa08e9-8cmng59ampbw/vod-assets/20230104T145231.000000_Ott_Hls_Ts_Avc_Aac_16x9_1920x1080p_30Hz_8500Kbps.m3u8"
+            ],
+            "durationInMs": 60026,
+            "videoDetails": {
+              "widthInPx": 1920,
+              "heightInPx": 1080
+            }
+          }
+        ],
+        "playlistFilePaths": [
+          "s3://eventreplayengine-mediaconvertbucket0ffa08e9-8cmng59ampbw/vod-assets/20230104T145231.000000.m3u8"
+        ],
+        "type": "HLS_GROUP"
+      },
+      {
+        "outputDetails": [
+          {
+            "outputFilePaths": [
+              "s3://eventreplayengine-rekognitionbucketb1399c89-6thjer0hfba0/rekog-data/20230104T145231.000000.mp4"
+            ],
+            "durationInMs": 60000,
+            "videoDetails": {
+              "widthInPx": 1280,
+              "heightInPx": 720
+            }
+          }
+        ],
+        "type": "FILE_GROUP"
       }
-    }
-  ]
+    ]
+  }
 }

@@ -11,7 +11,7 @@ Amplify.configure({
     endpoints: [
       {
         name: "GetVideoList",
-        endpoint: cdk.EventReplayEngine.AmplifyFrontendApiGatewayEndpoint6D255223,
+        endpoint: cdk.EventReplayEngine.APIGatewayURLforAmplify,
       },
     ],
   },

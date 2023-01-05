@@ -1,17 +1,20 @@
 {
   "EventReplayEngine": {
-    "MyStreamingCloudFrontForVod": "d1h0ra94omzkq4.cloudfront.net",
+    "MyMediaConvertBucket": "eventreplayengine-mediaconvertbucket0ffa08e9-8cmng59ampbw",
+    "MyStreamingCloudFrontForVod": "d31vfq9383bzce.cloudfront.net",
     "MyMediaPackageChannelName": "EventReplayEngine_EMP-CDK",
-    "MyMediaLiveChannelS3ArchivePath": "s3ssl://eventreplayengine-medialivearchivebucketadf8d49c-1vg8egfkoxi56/medialiveArchive/",
+    "MyMediaLiveChannelS3ArchivePath": "s3ssl://eventreplayengine-medialivearchivebucketadf8d49c-1nedgalslm1pd/medialiveArchive/",
     "MyMediaLiveChannelInputName": "EventReplayEngine_RTMP_PUSH_MediaLiveInput",
-    "AmplifyFrontendApiGatewayEndpoint6D255223": "https://k4tajna835.execute-api.ap-northeast-2.amazonaws.com/prod/",
-    "MyStreamingCloudFrontS3LogBucket": "eventreplayengine-mycloudfrontdistributionlogsbuc-1r9xx9jif6wwu",
-    "FrontPageURL": "http://d3f5a7flxumo1g.cloudfront.net",
-    "MyMediaLiveChannelArn": "arn:aws:medialive:ap-northeast-2:236241703319:channel:3588078",
-    "MyStreamingloudFrontDashEndpoint": "https://d8gprbbm1agsv.cloudfront.net/out/v1/160b02bea07d4ec0839140d64e447bca/index.mpd",
-    "MyMediaPackageChannelMyMediaPackageChannelRole864BA9E9": "arn:aws:iam::236241703319:role/EventReplayEngine-MyMediaPackageChannelMyMediaPack-SFYBJ0Z8IYIG",
-    "MyMediaLiveChannelDestPri": "rtmp://3.34.25.192:1935/live/primary",
-    "APIGatewayURLforAmplify": "https://k4tajna835.execute-api.ap-northeast-2.amazonaws.com/prod/",
-    "MyStreamingCloudFrontHlsEndpoint": "https://d8gprbbm1agsv.cloudfront.net/out/v1/00af1723833e4104af24a811dcfbc64e/index.m3u8"
+    "AmplifyFrontendApiGatewayEndpoint6D255223": "https://h62gx7u9r2.execute-api.ap-northeast-2.amazonaws.com/prod/",
+    "MyStreamingCloudFrontS3LogBucket": "eventreplayengine-mycloudfrontdistributionlogsbuc-8qjlhqzqmbqy",
+    "MyMediaLiveArchiveBucket": "eventreplayengine-medialivearchivebucketadf8d49c-1nedgalslm1pd",
+    "FrontPageURL": "http://d33tc4poer1ctl.cloudfront.net",
+    "MyMediaLiveChannelArn": "arn:aws:medialive:ap-northeast-2:236241703319:channel:6033864",
+    "MyStreamingloudFrontDashEndpoint": "https://d3pspjsqfkpjwd.cloudfront.net/out/v1/2ce58adc61084de5b68e2554a4e8c3b6/index.mpd",
+    "MyRekognitionBucket": "eventreplayengine-rekognitionbucketb1399c89-6thjer0hfba0",
+    "MyMediaPackageChannelMyMediaPackageChannelRole864BA9E9": "arn:aws:iam::236241703319:role/EventReplayEngine-MyMediaPackageChannelMyMediaPack-S8NM8SWFBGHD",
+    "MyMediaLiveChannelDestPri": "rtmp://13.209.181.30:1935/live/primary",
+    "APIGatewayURLforAmplify": "https://h62gx7u9r2.execute-api.ap-northeast-2.amazonaws.com/prod/",
+    "MyStreamingCloudFrontHlsEndpoint": "https://d3pspjsqfkpjwd.cloudfront.net/out/v1/d4e0040d353d42ee9acb2e39b863682b/index.m3u8"
   }
 }

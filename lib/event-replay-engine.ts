@@ -183,6 +183,22 @@ export class EventReplayEngine extends cdk.Stack {
         });
       }
     }
+    // S3 Buckets
+    new CfnOutput(this, "MyMediaLiveArchiveBucket", {
+      value: mediaLiveArchiveBucket.bucketName,
+      exportName: Aws.STACK_NAME + "mediaLiveArchiveBucket",
+      description: "MediaLive S3 Archive Bucket",
+    });
+    new CfnOutput(this, "MyMediaConvertBucket", {
+      value: mediaConvertBucket.bucketName,
+      exportName: Aws.STACK_NAME + "mediaConvertBucket",
+      description: "MediaConvert Output Buckets",
+    });
+    new CfnOutput(this, "MyRekognitionBucket", {
+      value: rekognitionBucket.bucketName,
+      exportName: Aws.STACK_NAME + "rekognitionBucket",
+      description: "Rekognition Analysis Bucket",
+    });
 
     new CfnOutput(this, "MyMediaLiveChannelS3ArchivePath", {
       value: mediaLiveChannel.s3ArchivePath,

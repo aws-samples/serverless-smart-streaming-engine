@@ -28,6 +28,7 @@ export const handler = async (event: EventBridgeEvent<"Media Convertin Complete 
   let i = 2;
   while (i < objectInfo.length) {
     key += "/" + objectInfo[i];
+    i++;
   }
 
   console.log(`Bucket: ${bucket}, Key: ${key}`);

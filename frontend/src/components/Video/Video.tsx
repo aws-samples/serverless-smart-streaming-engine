@@ -6,6 +6,7 @@ import cdk from "../../cdk-exports.json";
 const Video = () => {
   // const videoURL = process.env.REACT_APP_LIVE_STREAMING_CF_URL;
   const videoURL = cdk.EventReplayEngine.MyStreamingCloudFrontHlsEndpoint;
+  console.log(videoURL);
 
   return (
     <div className={styles.videoPlayer}>
