@@ -133,4 +133,4 @@ cdk destroy
 
 ## License
 
-This sample code is made available under Apache 2.0 license. See the LICENSE file.
+This sample code is made available under MIT-0 license. See the LICENSE file.
