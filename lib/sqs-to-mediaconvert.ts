@@ -21,15 +21,13 @@ export class mediaConvertLambda extends Construct {
   constructor(
     scope: Construct,
     id: string,
+    region: string,
     sqsQueueUrl: string,
     mcBucket: s3.Bucket,
     rkBucket: s3.Bucket,
     jobQueue: sqs.IQueue
   ) {
     super(scope, id);
-
-    // Load MediaConvert endpoint URL from .env file
-    const mediaConvertEndpoint: string = process.env.MEDIACONVERT_URL!;
 
     // Create a job template using JSON
     const jobTemplateParams = require("../config/encoding-profiles/mc-job-template");
@@ -43,7 +41,7 @@ export class mediaConvertLambda extends Construct {
 
     const jobTemplate = new mediaconvert.CfnJobTemplate(this, "MyCfnJobTemplate", {
       category: "OTT-HLS",
-      queue: "arn:aws:mediaconvert:ap-northeast-2:236241703319:queues/Default",
+      // queue: "arn:aws:mediaconvert:ap-northeast-2:236241703319:queues/Default",
       name: "event-replay-engine-job-template",
       settingsJson: jobTemplateParams,
       accelerationSettings: {
@@ -82,6 +80,7 @@ export class mediaConvertLambda extends Construct {
       ephemeralStorageSize: Size.mebibytes(1024),
       timeout: Duration.minutes(1),
       environment: {
+        REGION: region,
         QUEUE_URL: sqsQueueUrl,
         MC_JOB_TEMPLATE: jobTemplateName,
         MC_ROLE_ARN: roleForMediaConvert.roleArn,

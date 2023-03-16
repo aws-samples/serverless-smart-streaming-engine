@@ -13,7 +13,7 @@ import * as path from "path";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 
 export class MediaConvertToRekognition extends Construct {
-  constructor(scope: Construct, id: string, rekogBucket: s3.Bucket, tableName: string) {
+  constructor(scope: Construct, id: string, region: string, rekogBucket: s3.Bucket, tableName: string) {
     super(scope, id);
 
     // Create an event rule for MediaConvert Complete
@@ -44,6 +44,7 @@ export class MediaConvertToRekognition extends Construct {
       ephemeralStorageSize: Size.mebibytes(10240),
       timeout: Duration.minutes(15),
       environment: {
+        REGION: region,
         DEST_BUCKET: rekogBucket.bucketName,
         TABLE: tableName,
       },

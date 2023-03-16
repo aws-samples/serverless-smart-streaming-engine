@@ -16,10 +16,11 @@ import { CloudFrontForStreaming } from "./cloudfront-streaming";
 import { CloudFrontForVod } from "./cloudfront-vod";
 import { S3LambdaToSQS } from "./s3lambda-to-sqs";
 import { mediaConvertLambda } from "./sqs-to-mediaconvert";
-import * as lambda from "aws-cdk-lib/aws-lambda";
 import { MediaConvertToRekognition } from "./mediaconvert-rekognition";
 import { AmplifyStack } from "./amplify";
-import { table } from "console";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 const configurationMediaLive = {
   streamName: "live",
@@ -74,6 +75,10 @@ export class EventReplayEngine extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const region: string = process.env.REGION!;
+    console.log(__dirname);
+    console.log("Current Region: ", region);
+
     // S3 bucket for MediaLive Archive
     const mediaLiveArchiveBucket = new s3.Bucket(this, "mediaLiveArchiveBucket");
     const mediaConvertBucket = new s3.Bucket(this, "MediaConvertBucket");
@@ -125,11 +130,12 @@ export class EventReplayEngine extends cdk.Stack {
     const lambdaReqQueue = new sqs.Queue(this, "EventReplayEngine", {
       visibilityTimeout: Duration.seconds(60),
     });
-    const fromS3LamdbatoSQS = new S3LambdaToSQS(this, "S3LamdbaToSQS", mediaLiveArchiveBucket, lambdaReqQueue);
+    const fromS3LamdbatoSQS = new S3LambdaToSQS(this, "S3LamdbaToSQS", region, mediaLiveArchiveBucket, lambdaReqQueue);
 
     const sqsToMediaConvert = new mediaConvertLambda(
       this,
       "LamdbaCallingMediaConvert",
+      region,
       lambdaReqQueue.queueUrl,
       mediaConvertBucket,
       rekognitionBucket,
@@ -139,6 +145,7 @@ export class EventReplayEngine extends cdk.Stack {
     const mediaConvertToRekognition = new MediaConvertToRekognition(
       this,
       "MediaConvertToRekognition",
+      region,
       rekognitionBucket,
       ddbTable.tableName
     );
@@ -147,7 +154,7 @@ export class EventReplayEngine extends cdk.Stack {
     const cloudfrontForVod = new CloudFrontForVod(this, "CloudFrontForVod", mediaConvertBucket);
 
     // Resources for Amplify Frontend: API Gateway + Lambda
-    const frontendStack = new AmplifyStack(this, "AmplifyFrontend", ddbTable, cloudfrontForVod.domainName);
+    const frontendStack = new AmplifyStack(this, "AmplifyFrontend", region, ddbTable, cloudfrontForVod.domainName);
 
     /*
      * Final step: CloudFormation Output 👇
@@ -183,7 +190,11 @@ export class EventReplayEngine extends cdk.Stack {
         });
       }
     }
-    // S3 Buckets
+    new CfnOutput(this, "MyRegion", {
+      value: region! as string,
+      exportName: Aws.STACK_NAME + "currentRegion",
+      description: "Deployed Region",
+    });
     new CfnOutput(this, "MyMediaLiveArchiveBucket", {
       value: mediaLiveArchiveBucket.bucketName,
       exportName: Aws.STACK_NAME + "mediaLiveArchiveBucket",

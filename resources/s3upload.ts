@@ -3,7 +3,9 @@ import { SQSClient } from "@aws-sdk/client-sqs";
 import { SendMessageCommand } from "@aws-sdk/client-sqs";
 
 export const handler = async (event: S3Event) => {
-  const sqs = new SQSClient({ region: "ap-northeast-2" });
+  const region = process.env["REGION"]!;
+
+  const sqs = new SQSClient({ region });
   const queueURL = process.env["QUEUE_URL"];
 
   const s3Info = event["Records"][0]["s3"];

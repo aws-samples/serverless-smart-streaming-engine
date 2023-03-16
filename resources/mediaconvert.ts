@@ -3,18 +3,19 @@ import { SQSHandler } from "aws-lambda";
 import { MediaConvertClient, CreateJobCommand, DescribeEndpointsCommand } from "@aws-sdk/client-mediaconvert";
 
 export const handler: SQSHandler = async (event, context) => {
-  const sqs = new SQSClient({ region: "ap-northeast-2" });
+  const queueURL = process.env["QUEUE_URL"];
+  const mcJobTemplate: string = process.env["MC_JOB_TEMPLATE"]!;
+  const mcRoleArn = process.env["MC_ROLE_ARN"]!;
+  const region = process.env["REGION"]!;
 
-  let mediaconvert = new MediaConvertClient({ region: "ap-northeast-2" });
+  const sqs = new SQSClient({ region });
+
+  let mediaconvert = new MediaConvertClient({ region });
   // Get MediaConvert Endpoint
   const data = await mediaconvert.send(new DescribeEndpointsCommand({ MaxResults: 0 }));
   const endpoint = data.Endpoints![0];
   console.log(`My MediaConvert endpoint is ${JSON.stringify(endpoint)}`);
   mediaconvert = new MediaConvertClient({ endpoint: endpoint.Url });
-
-  const queueURL = process.env["QUEUE_URL"];
-  const mcJobTemplate: string = process.env["MC_JOB_TEMPLATE"]!;
-  const mcRoleArn = process.env["MC_ROLE_ARN"]!;
 
   console.log(`Number of Records: ${event.Records.length}`);
   console.log(`Content of Records: ${JSON.stringify(event)}`);

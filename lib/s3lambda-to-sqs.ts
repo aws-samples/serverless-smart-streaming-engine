@@ -12,7 +12,7 @@ import * as path from "path";
 
 export class S3LambdaToSQS extends Construct {
   public readonly sqsQueueURL: string;
-  constructor(scope: Construct, id: string, s3ArchiveBucket: s3.Bucket, lambdaReqQueue: sqs.Queue) {
+  constructor(scope: Construct, id: string, region: string, s3ArchiveBucket: s3.Bucket, lambdaReqQueue: sqs.Queue) {
     super(scope, id);
 
     const lamdbaRole = new iam.Role(this, "RoleForS3UploadLambda", {
@@ -29,22 +29,11 @@ export class S3LambdaToSQS extends Construct {
       entry: path.join(__dirname, `/../resources/s3upload.ts`),
       handler: "handler",
       environment: {
+        REGION: region,
         BUCKET_NAME: s3ArchiveBucket.bucketName,
         QUEUE_URL: lambdaReqQueue.queueUrl,
       },
     });
-
-    // const s3UploadTrigger = new lambda.Function(this, "EventReplayEngineS3UploadTrigger", {
-    //   role: lamdbaRole,
-    //   // runtime: lambda.Runtime.PYTHON_3_7,
-    //   runtime: lambda.Runtime.NODEJS_18_X,
-    //   handler: "s3upload.handler",
-    //   code: lambda.Code.fromAsset("./resources"),
-    //   environment: {
-    //     BUCKET_NAME: s3ArchiveBucket.bucketName,
-    //     QUEUE_URL: lambdaReqQueue.queueUrl,
-    //   },
-    // });
 
     const trigger = new notifications.LambdaDestination(myLambda);
     trigger.bind(this, s3ArchiveBucket);

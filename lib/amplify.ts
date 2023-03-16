@@ -15,7 +15,7 @@ import * as path from "path";
 export class AmplifyStack extends Construct {
   public readonly frontPage: string;
   public readonly agwUrl: string;
-  constructor(scope: Construct, id: string, table: dynamodb.Table, cfDomain: string) {
+  constructor(scope: Construct, id: string, region: string, table: dynamodb.Table, cfDomain: string) {
     super(scope, id);
 
     // Step 1: Lambda that scans the dynamoDB table
@@ -32,6 +32,7 @@ export class AmplifyStack extends Construct {
       entry: path.join(__dirname, `/../resources/getData.ts`),
       handler: "handler",
       environment: {
+        REGION: region,
         DDB_TABLE: table.tableName!,
         CF_URL: cfDomain,
       },

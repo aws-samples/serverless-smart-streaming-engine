@@ -13,13 +13,13 @@ interface ISvgObj {
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
 export const handler = async () => {
+  const region = process.env["REGION"]!;
   // Set the AWS Region.
-  const REGION = "ap-northeast-2"; //e.g. "us-east-1"
   const cfDomain = process.env["CF_URL"];
 
   // Create an Amazon DynamoDB service client object.
   const ddbTable = process.env["DDB_TABLE"];
-  const ddbClient = new DynamoDBClient({ region: REGION });
+  const ddbClient = new DynamoDBClient({ region });
 
   // Set the parameters.
   const params = {

@@ -11,8 +11,10 @@ interface ISvgObj {
 }
 
 export const handler = async (event: EventBridgeEvent<"Media Convertin Complete Event", any>) => {
-  const rekognition = new RekognitionClient({ region: "ap-northeast-2" });
-  const dynamodb = new DynamoDBClient({ region: "ap-northeast-2" });
+  const region = process.env["REGION"]!;
+
+  const rekognition = new RekognitionClient({ region });
+  const dynamodb = new DynamoDBClient({ region });
 
   // Get dynamoDB table name from environment variables
   const tableName = process.env["TABLE"];
