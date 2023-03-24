@@ -10,7 +10,7 @@ This demo shows how you can use CDK and amplify to build a streaming service wit
 - Simple React frontend using Amplify
 - All code written in typescript
 
-![](images/2023-03-24-22-32-43.png)
+![](images/demo.gif)
 
 ## Architecture
 
