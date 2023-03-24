@@ -2,7 +2,7 @@
 
 ## Overview
 
-This demo shows how you can use CDK and amplify to build a streaming service with a smart backend that analyze the streaming media using a AI/ML service. In this particular demo, it sends a soccer game that Tottenham plays, generate clips, and services only clips that Son Heung-min appears.
+This demo shows how you can use CDK and amplify to build a streaming service with a smart backend that analyze the streaming media using a AI/ML service. In this particular demo, it plays Reacher from Prime Video and generate short VoD contents for each actors.
 
 - Elemental Media Services for streaming and vod contents
 - Serverless Event-Driven Architecture
@@ -10,7 +10,7 @@ This demo shows how you can use CDK and amplify to build a streaming service wit
 - Simple React frontend using Amplify
 - All code written in typescript
 
-![](./images/2023-01-05-09-57-31.png)
+![](images/2023-03-24-22-32-43.png)
 
 ## Architecture
 
@@ -25,7 +25,7 @@ The streaming feature leverages Amazon Elemental Services. [Amazon Elemental Med
 This demo shows a good demonstration on how you can use various types of events when developing serverless architecture. Amazon Elemental MediaLive has two output groups, one for MediaPackage for live stream and another for S3 Archive. The S3 Archive output group archives live videos into [Amazon S3](https://aws.amazon.com/s3/?nc2=type_a) bucket which becomes the first event of Event-Driven Serverless backend.
 When a media file is uploaded to S3 Archive Bucket, a [Lambda](https://aws.amazon.com/lambda/?nc2=type_a) is invoked to put a message including the object information into [SQS](https://aws.amazon.com/sqs/?nc2=type_a) queue. Then another lambda is called via SQS target, to call [Amazon Elemental MediaConvert](https://aws.amazon.com/mediaconvert/?nc2=type_a) to convert the file.
 MediaConvert also has two output groups. One output group converts the file into HLS so it can be served as VoD Content. The other output group converts the file into MP4, because Amazon Rekognition can only analyze MP4 files.
-[Amazon EventBridge](https://aws.amazon.com/eventbridge/?nc2=type_a) watches the jobs of MediaConvert, and it triggers an event when it completes and calls the third lambda. The third lambda calles [Amazon Rekognition](https://aws.amazon.com/rekognition/?nc2=type_a) to analyze who appears in the video clip. And if a certain player is found ("Son Heung-min" in this demo), it puts the metadata in [Amazon DynamoDB](https://aws.amazon.com/dynamodb/?nc2=type_a).
+[Amazon EventBridge](https://aws.amazon.com/eventbridge/?nc2=type_a) watches the jobs of MediaConvert, and it triggers an event when it completes and calls the third lambda. The third lambda calles [Amazon Rekognition](https://aws.amazon.com/rekognition/?nc2=type_a) to analyze who appears in the video clip. And if a certain celebrity is found, it puts the metadata in [Amazon DynamoDB](https://aws.amazon.com/dynamodb/?nc2=type_a).
 
 ### Frontend Integration
 
@@ -104,12 +104,11 @@ npm install
    - Stream Key: streamkey
    ```
 
-   ![](./images/2023-01-04-20-56-15.png)
+![](images/2023-03-24-22-34-49.png)
 
 6. Play a video that Son Heung-min is in. It could be a local file or youtube video.
 
 7. From Source, click `+` button and choose Window Capture. Select the window you want to start streaming to MediaLive input and click the button `Start Streaming`
-   ![](./images/2023-01-04-23-55-16.png)
 
 8. Run the frontend application
 
@@ -118,8 +117,7 @@ cd ./frontend
 npm start
 ```
 
-8. It will show the streaming video at the top of the page. It takes a few minutes for the backend to generate clips and analyze each clips which is 60 seconds long. Click the refresh icon at the bottom right corner, and all the clips that a certain celebrity is in will show up below.
-   ![](./images/2023-01-05-09-57-31.png)
+8. It will show the streaming video at the top of the page. It takes a few minutes for the backend to generate clips and analyze each clips which is 60 seconds long. Click `Celebrity` menu at the top right corner, and it will show buttons for each actor in the video. When you click the button, it will show all the shorts content for the actor.
 
 ## Clean Up
 
