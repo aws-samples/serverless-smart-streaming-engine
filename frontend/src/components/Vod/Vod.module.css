@@ -1,31 +1,32 @@
 .vod h1 {
-    color: white;
+  color: white;
 }
 
 .vod ul {
-    list-style: none;
-    display: flex;
-    width: 100%;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    position: relative;
-    padding: 0px;
-    margin: 0px;
+  list-style: none;
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  /* justify-content: space-around; */
+  position: relative;
+
+  padding: 0px;
+  margin: 0px;
 }
 
 .vodBar {
-    display: flex;
-    justify-content: space-between;
-    margin: 1rem;
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem;
 }
 
 .vodRefreshIcon:hover {
-    margin: 0;
-    padding: 0;
-    border: 1px solid black;
-    font-size: 30px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid black;
+  font-size: 30px;
 }
 
 .vodRefreshIcon:active {
-    background-color: darkgray;
+  background-color: darkgray;
 }

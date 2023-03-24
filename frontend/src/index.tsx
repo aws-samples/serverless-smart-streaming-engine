@@ -5,6 +5,10 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { Amplify } from "aws-amplify";
 import cdk from "./cdk-exports.json";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Streaming from "./components/Streaming/Streaming";
+import Vod from "./components/Vod/Vod";
+import Celebrities from "./components/Celebrities/Celebrities";
 
 Amplify.configure({
   API: {
@@ -17,10 +21,27 @@ Amplify.configure({
   },
 });
 
-const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      { index: true, element: <Streaming /> },
+      { path: "celebs", element: <Celebrities /> },
+      { path: "shorts", element: <Vod /> },
+      { path: "shorts/:keyword", element: <Vod /> },
+    ],
+  },
+]);
+
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
+
 root.render(
   <React.StrictMode>
-    <App />
+    {/* <App /> */}
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 

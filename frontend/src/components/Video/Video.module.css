@@ -1,12 +1,17 @@
 .videoPlayer {
-    position: relative;
-    top: 0;
-    left: 0;
-    padding-top: 56.25%;
+  position: relative;
+  left: 50%;
+  transform: translate(-50%, 0);
+  padding-top: 56.25%;
+  /* max-width: 1280px; */
+  /* max-width: 1080px; */
 }
 
 .reactPlayerLive {
-    position: absolute;
-    top: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+@media (min-width: 1280px) {
 }

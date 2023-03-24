@@ -10,7 +10,9 @@ interface ISvgObj {
   [key: string]: string;
 }
 
-export const handler = async (event: EventBridgeEvent<"Media Convertin Complete Event", any>) => {
+export const handler = async (
+  event: EventBridgeEvent<"Media Convertin Complete Event", any>
+) => {
   const region = process.env["REGION"]!;
 
   const rekognition = new RekognitionClient({ region });
@@ -22,7 +24,10 @@ export const handler = async (event: EventBridgeEvent<"Media Convertin Complete 
   console.log(`Event received from EventBridge: ${JSON.stringify(event)}`);
 
   // Get the bucket and key name from the event
-  let objectInfo = event["detail"]["outputGroupDetails"][1]["outputDetails"][0]["outputFilePaths"][0].split("//");
+  let objectInfo =
+    event["detail"]["outputGroupDetails"][1]["outputDetails"][0][
+      "outputFilePaths"
+    ][0].split("//");
   objectInfo = objectInfo[1].split("/");
 
   const bucket = objectInfo[0];
@@ -37,23 +42,29 @@ export const handler = async (event: EventBridgeEvent<"Media Convertin Complete 
 
   const celebrities = await rekognize(rekognition, bucket, key);
 
-  if ("Son Heung-min" in celebrities) {
-    const videoPath = "s3://" + bucket + "/" + key;
+  // Store all celebrities as a primary key and the current timestamp as a sort key
+  // and save the videoPath for as an attribute
+  for (const celeb in celebrities) {
+    const videoPath: string = "s3://" + bucket + "/" + key;
 
     dynamodb.send(
       new PutItemCommand({
         TableName: tableName,
         Item: {
-          PK: { S: videoPath },
+          PK: { S: celeb },
           SK: { S: Date.now().toString() },
-          celebs: { S: JSON.stringify(celebrities) },
+          PATH: { S: videoPath },
         },
       })
     );
   }
 };
 
-const rekognize = async (rekog: RekognitionClient, bucket: string, key: string) => {
+const rekognize = async (
+  rekog: RekognitionClient,
+  bucket: string,
+  key: string
+) => {
   let theCelebs: ISvgObj = {};
 
   const startRekogCelebRes = await rekog.send(
@@ -101,7 +112,9 @@ const rekognize = async (rekog: RekognitionClient, bucket: string, key: string) 
       if (cconfidence !== undefined && cconfidence > 95) {
         const ts = celebrity.Timestamp;
         const name = celebrity.Celebrity.Name!;
-        strDetail += strDetail + `At ${ts} ms: ${name} (confidence ${Math.round(cconfidence)})`;
+        strDetail +=
+          strDetail +
+          `At ${ts} ms: ${name} (confidence ${Math.round(cconfidence)})`;
         if (!(name in theCelebs)) {
           theCelebs[name] = name;
         }

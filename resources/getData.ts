@@ -9,6 +9,12 @@ interface ISvgObj {
   [key: string]: string;
 }
 
+type Record = {
+  celebName: string;
+  createdAt: string;
+  url: string;
+};
+
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
@@ -30,22 +36,32 @@ export const handler = async () => {
   console.log(JSON.stringify(data.Items));
 
   const urls: ISvgObj = {};
+  const payload: Record[] = [];
 
   data.Items!.forEach(function (element, index, array) {
-    const filepath = element.PK.S!.split("//")[1].split("/");
+    const filepath = element.PATH.S!.split("//")[1].split("/");
     const key = filepath[filepath.length - 1].split(".");
     const fileName = key[0] + "." + key[1] + ".m3u8";
     // const folder = filepath.slice(1).join("/");
     const url = cfDomain + "/vod-assets/" + fileName;
     console.log(url + "    " + key);
     urls[fileName] = url;
+
+    const item: Record = {
+      celebName: element.PK.S! as string,
+      createdAt: element.SK.S! as string,
+      url,
+    };
+
+    payload.push(item);
   });
+
   return {
     statusCode: 200,
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Headers": "*",
     },
-    body: JSON.stringify(urls),
+    body: JSON.stringify(payload),
   };
 };

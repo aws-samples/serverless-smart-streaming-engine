@@ -1,9 +1,9 @@
-import React from "react";
 import Video from "../Video/Video";
+import style from "./Streaming.module.css";
 
 const Streaming = () => {
   return (
-    <div className="streaming">
+    <div className={style.streaming}>
       <Video></Video>
     </div>
   );

@@ -1,12 +1,35 @@
 .navbar {
-    display: flex;
-    background-color: #333;
-    color: aliceblue;
-    justify-content: left;
+  display: flex;
+  background-color: #fa6400;
+  align-items: center;
 }
 
 .navbar h2 {
-    padding: 0px;
-    margin: 10px;
-    margin-left: 2rem;
+  padding: 0px;
+  margin: 10px;
+  margin-left: 2rem;
+  color: whitesmoke;
+}
+
+.link {
+  text-decoration: none;
+}
+
+.toCelebButton__container {
+  display: flex;
+  margin-left: auto;
+}
+
+.toCelebButton {
+  padding: 0px;
+  margin-right: 5rem;
+  text-decoration: none;
+  color: whitesmoke;
+  font-weight: bolder;
+  font-size: 1.2rem;
+}
+
+.toCelebButton:hover,
+.toCelebButton:focus {
+  font-size: 1.3rem;
 }

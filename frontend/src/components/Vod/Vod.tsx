@@ -1,22 +1,17 @@
-import React, { ReactElement, MouseEvent } from "react";
+import React, { ReactElement, MouseEvent, useEffect } from "react";
 import Preview from "../Preview/Preview";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRotate, faVideo } from "@fortawesome/free-solid-svg-icons";
+import { faVideo } from "@fortawesome/free-solid-svg-icons";
 import { API } from "aws-amplify";
 import { useState } from "react";
 import styles from "./Vod.module.css";
-
-type data = {
-  key: string;
-  value: string;
-};
+import { useParams } from "react-router-dom";
 
 const Vod = () => {
-  const [playlist, setplaylist] = useState<ReactElement[]>([]);
+  const [playlist, setPlaylist] = useState<ReactElement[]>([]);
+  const { keyword } = useParams();
 
-  const getVodList = (e: MouseEvent) => {
-    e.preventDefault();
-
+  useEffect(() => {
     const apiName = "GetVideoList";
     const apiPath = "/vod";
     const testEvent = {
@@ -25,37 +20,44 @@ const Vod = () => {
 
     const list: ReactElement[] = [];
 
+    // temporary array and set to remove duplicate
+    let tempArray: string[] = [];
+    const tempSet: Set<string> = new Set();
+
     API.get(apiName, apiPath, testEvent)
       .then((response) => {
-        // console.log(response);
+        for (const item of response) {
+          if (!keyword) tempSet.add(item.url);
+          else {
+            if (keyword === item.celebName) {
+              console.log(`${keyword} provided`);
+              tempSet.add(item.url);
+            }
+          }
+        }
 
-        for (const i in response) {
-          // this.list.push(<li key={key.toString}><a href={value}>{key}</a></li>)
-          console.log(i, response[i]);
+        tempArray = [...tempSet];
+
+        for (const elem of tempArray) {
           list.push(
-            <li key={i}>
-              <Preview url={response[i]} title={i}></Preview>
+            <li key={elem}>
+              <Preview url={elem} title={elem}></Preview>
             </li>
           );
         }
 
-        setplaylist(list);
-        // console.log(playlist);
+        setPlaylist(list);
       })
       .catch((error) => {
         // console.log(error.response);
       });
-  };
+  }, []);
 
   return (
     <div className={styles.vod}>
-      {/* <h1 onClick={this.getVodList.bind(this)}>{this.state.pageTitle}</h1> */}
       <div className={styles.vodBar}>
-        <div>
-          <FontAwesomeIcon icon={faVideo} />
-          <span>&nbsp;손흥민 하이라이트</span>
-        </div>
-        <FontAwesomeIcon className={styles.vodRefreshIcon} icon={faRotate} onClick={getVodList} />
+        {/* <FontAwesomeIcon icon={faVideo} />
+        <span>&nbsp;Shorts</span> */}
       </div>
       <ul>{playlist}</ul>
     </div>

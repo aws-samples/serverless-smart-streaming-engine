@@ -16,8 +16,7 @@ const Video = () => {
         width="100%"
         height="100%"
         type="application/x-mpegURL"
-        controls
-      ></ReactPlayer>
+        controls></ReactPlayer>
     </div>
   );
 };

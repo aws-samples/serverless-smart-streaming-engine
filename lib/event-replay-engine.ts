@@ -19,6 +19,7 @@ import { mediaConvertLambda } from "./sqs-to-mediaconvert";
 import { MediaConvertToRekognition } from "./mediaconvert-rekognition";
 import { AmplifyStack } from "./amplify";
 import * as dotenv from "dotenv";
+import { table } from "console";
 
 dotenv.config();
 
@@ -80,7 +81,10 @@ export class EventReplayEngine extends cdk.Stack {
     console.log("Current Region: ", region);
 
     // S3 bucket for MediaLive Archive
-    const mediaLiveArchiveBucket = new s3.Bucket(this, "mediaLiveArchiveBucket");
+    const mediaLiveArchiveBucket = new s3.Bucket(
+      this,
+      "mediaLiveArchiveBucket"
+    );
     const mediaConvertBucket = new s3.Bucket(this, "MediaConvertBucket");
     const rekognitionBucket = new s3.Bucket(this, "RekognitionBucket");
 
@@ -99,7 +103,11 @@ export class EventReplayEngine extends cdk.Stack {
     /*
      * First step: Create MediaPackage Channel 👇
      */
-    const mediaPackageChannel = new MediaPackageCdnAuth(this, "MyMediaPackageChannel", configurationMediaPackage);
+    const mediaPackageChannel = new MediaPackageCdnAuth(
+      this,
+      "MyMediaPackageChannel",
+      configurationMediaPackage
+    );
 
     /*
      * Second step: Create MediaLive Channel 👇
@@ -130,7 +138,13 @@ export class EventReplayEngine extends cdk.Stack {
     const lambdaReqQueue = new sqs.Queue(this, "EventReplayEngine", {
       visibilityTimeout: Duration.seconds(60),
     });
-    const fromS3LamdbatoSQS = new S3LambdaToSQS(this, "S3LamdbaToSQS", region, mediaLiveArchiveBucket, lambdaReqQueue);
+    const fromS3LamdbatoSQS = new S3LambdaToSQS(
+      this,
+      "S3LamdbaToSQS",
+      region,
+      mediaLiveArchiveBucket,
+      lambdaReqQueue
+    );
 
     const sqsToMediaConvert = new mediaConvertLambda(
       this,
@@ -151,10 +165,20 @@ export class EventReplayEngine extends cdk.Stack {
     );
 
     // CloudFront Distribution for VOD contents
-    const cloudfrontForVod = new CloudFrontForVod(this, "CloudFrontForVod", mediaConvertBucket);
+    const cloudfrontForVod = new CloudFrontForVod(
+      this,
+      "CloudFrontForVod",
+      mediaConvertBucket
+    );
 
     // Resources for Amplify Frontend: API Gateway + Lambda
-    const frontendStack = new AmplifyStack(this, "AmplifyFrontend", region, ddbTable, cloudfrontForVod.domainName);
+    const frontendStack = new AmplifyStack(
+      this,
+      "AmplifyFrontend",
+      region,
+      ddbTable,
+      cloudfrontForVod.domainName
+    );
 
     /*
      * Final step: CloudFormation Output 👇
@@ -170,21 +194,31 @@ export class EventReplayEngine extends cdk.Stack {
       exportName: Aws.STACK_NAME + "mediaLiveChannelInputName",
       description: "The Input Name of the MediaLive Channel",
     });
-    if (["UDP_PUSH", "RTP_PUSH", "RTMP_PUSH"].includes(configurationMediaLive["inputType"])) {
+    if (
+      ["UDP_PUSH", "RTP_PUSH", "RTMP_PUSH"].includes(
+        configurationMediaLive["inputType"]
+      )
+    ) {
       if (configurationMediaLive["channelClass"] == "STANDARD") {
         new CfnOutput(this, "MyMediaLiveChannelDestPri", {
-          value: Fn.join("", [Fn.select(0, mediaLiveChannel.channelInput.attrDestinations)]),
+          value: Fn.join("", [
+            Fn.select(0, mediaLiveChannel.channelInput.attrDestinations),
+          ]),
           exportName: Aws.STACK_NAME + "mediaLiveChannelDestPri",
           description: "Primary MediaLive input Url",
         });
         new CfnOutput(this, "MyMediaLiveChannelDestSec", {
-          value: Fn.join("", [Fn.select(1, mediaLiveChannel.channelInput.attrDestinations)]),
+          value: Fn.join("", [
+            Fn.select(1, mediaLiveChannel.channelInput.attrDestinations),
+          ]),
           exportName: Aws.STACK_NAME + "mediaLiveChannelDestSec",
           description: "Seconday MediaLive input Url",
         });
       } else {
         new CfnOutput(this, "MyMediaLiveChannelDestPri", {
-          value: Fn.join("", [Fn.select(0, mediaLiveChannel.channelInput.attrDestinations)]),
+          value: Fn.join("", [
+            Fn.select(0, mediaLiveChannel.channelInput.attrDestinations),
+          ]),
           exportName: Aws.STACK_NAME + "mediaLiveChannelDestPri",
           description: "Primary MediaLive input Url",
         });
@@ -254,7 +288,13 @@ export class EventReplayEngine extends cdk.Stack {
     new CfnOutput(this, "FrontPageURL", {
       value: "http://" + frontendStack.frontPage,
       exportName: Aws.STACK_NAME + "FrontPageURL",
-      description: "Frontend web page in S3 web hosting with CloudFront distribution.",
+      description:
+        "Frontend web page in S3 web hosting with CloudFront distribution.",
+    });
+    new CfnOutput(this, "DDBTableName", {
+      value: ddbTable.tableName,
+      exportName: Aws.STACK_NAME + "DDBTableName",
+      description: "DynamoDB table that stores the metadata of clips.",
     });
   }
 }

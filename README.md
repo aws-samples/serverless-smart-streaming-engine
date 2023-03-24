@@ -62,7 +62,13 @@ npm install
 export AWS_PROFILE=<your aws account profile>
 ```
 
-4. Bootstrap and synthesize CDK
+4. Create `.env` file and set `REGION` environment variable to your region
+
+```
+REGION=<your region>
+```
+
+5.  Bootstrap and synthesize CDK
 
 ```sh
 cdk bootstrap
