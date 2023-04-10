@@ -28,7 +28,7 @@
     "@types/aws-lambda": "^8.10.109",
     "aws-amplify": "^5.0.7",
     "aws-cdk-lib": "^2.45.0",
-    "aws-sdk": "^2.1274.0",
+    "aws-sdk": "^2.1354.0",
     "cdk-nag": "^2.20.5",
     "constructs": "^10.0.0",
     "dotenv": "^16.0.3",
