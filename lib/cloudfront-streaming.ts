@@ -35,12 +35,9 @@ export class CloudFrontForStreaming extends Construct {
       autoDeleteObjects: true,
       encryption: s3.BucketEncryption.S3_MANAGED,
       enforceSSL: true,
-      blockPublicAccess: new s3.BlockPublicAccess({
-        blockPublicPolicy: true,
-        blockPublicAcls: true,
-        ignorePublicAcls: true,
-        restrictPublicBuckets: true,
-      }),
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED
     });
     NagSuppressions.addResourceSuppressions(s3Logs, [
       {
