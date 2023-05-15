@@ -76,7 +76,7 @@ export class EventReplayEngine extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const region: string = process.env.REGION!;
+    const region = this.region;
     console.log(__dirname);
     console.log("Current Region: ", region);
 
