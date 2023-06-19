@@ -28,7 +28,7 @@
     "@aws-sdk/client-sqs": "^3.231.0",
     "@types/aws-lambda": "^8.10.109",
     "aws-amplify": "^5.0.7",
-    "aws-cdk-lib": "^2.45.0",
+    "aws-cdk-lib": "^2.80.0",
     "aws-sdk": "^2.1274.0",
     "cdk-nag": "^2.20.5",
     "constructs": "^10.0.0",
