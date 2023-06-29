@@ -4,6 +4,7 @@
 node_modules
 cdk-export.json
 note.md
+!frontend/src/global.d.ts
 
 # CDK asset staging directory
 .cdk.staging

@@ -37,7 +37,8 @@ export default function Celebrities() {
               className={styles.button}
               key={elem}
               name={elem}
-              onClick={onClickHander}>
+              onClick={onClickHander}
+            >
               {elem}
             </button>
           );
@@ -48,6 +49,6 @@ export default function Celebrities() {
       .catch((error) => {
         console.error(error.response);
       });
-  }, []);
+  }, [navigate]);
   return <div className={styles.buttonGroup}>{celebs}</div>;
 }

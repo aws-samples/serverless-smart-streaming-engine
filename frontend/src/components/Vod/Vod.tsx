@@ -1,7 +1,5 @@
-import React, { ReactElement, MouseEvent, useEffect } from "react";
+import React, { ReactElement, useEffect } from "react";
 import Preview from "../Preview/Preview";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faVideo } from "@fortawesome/free-solid-svg-icons";
 import { API } from "aws-amplify";
 import { useState } from "react";
 import styles from "./Vod.module.css";
@@ -51,7 +49,7 @@ const Vod = () => {
       .catch((error) => {
         // console.log(error.response);
       });
-  }, []);
+  }, [keyword]);
 
   return (
     <div className={styles.vod}>
